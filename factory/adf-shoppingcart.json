@@ -1,0 +1,9 @@
+{
+	"name": "adf-shoppingcart",
+	"location": "eastus2",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "3d7c9502-370c-436a-9201-ab8d9e6c2e9e",
+		"tenantId": "bfb5e012-4e7c-4b70-9552-6bc5870b6230"
+	}
+}
