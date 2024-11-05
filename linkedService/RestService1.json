@@ -1,0 +1,17 @@
+{
+	"name": "RestService1",
+	"properties": {
+		"parameters": {
+			"method": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "RestService",
+		"typeProperties": {
+			"url": "@{concat('https://fakestoreapi.com/',linkedService().method)}",
+			"enableServerCertificateValidation": true,
+			"authenticationType": "Anonymous"
+		}
+	}
+}
