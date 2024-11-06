@@ -1,0 +1,7 @@
+{
+	"name": "AzureSqlDatabase291",
+	"properties": {
+		"privateLinkResourceId": "/subscriptions/5cfb5783-831b-462a-9f75-40e226dc4044/resourceGroups/dataengineeringtraining/providers/Microsoft.Sql/servers/tariq-shopingcart",
+		"groupId": "sqlServer"
+	}
+}
