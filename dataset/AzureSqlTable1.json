@@ -5,12 +5,26 @@
 			"referenceName": "AzureSqlDatabase1",
 			"type": "LinkedServiceReference"
 		},
+		"parameters": {
+			"param_schema": {
+				"type": "string"
+			},
+			"param_tablename": {
+				"type": "string"
+			}
+		},
 		"annotations": [],
 		"type": "AzureSqlTable",
 		"schema": [],
 		"typeProperties": {
-			"schema": "staging",
-			"table": "products"
+			"schema": {
+				"value": "@dataset().param_schema",
+				"type": "Expression"
+			},
+			"table": {
+				"value": "@dataset().param_tablename",
+				"type": "Expression"
+			}
 		}
 	}
 }
