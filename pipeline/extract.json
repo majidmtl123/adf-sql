@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Copy data1",
+				"name": "copyproducts",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -26,12 +26,81 @@
 					},
 					"sink": {
 						"type": "AzureSqlSink",
-						"preCopyScript": "create schema Staging;\n\nCREATE TABLE Staging.Products (\n    id INT,                 \n    title VARCHAR(255) NOT NULL,        \n    price DECIMAL(10, 2) NOT NULL,      \n    category VARCHAR(100),              \n    description VARCHAR(MAX),          \n    image VARCHAR(255)                 \n);",
+						"preCopyScript": "truncate table staging.products",
 						"writeBehavior": "insert",
 						"sqlWriterUseTableLock": false,
 						"disableMetricsCollection": false
 					},
-					"enableStaging": false
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "$['id']"
+								},
+								"sink": {
+									"name": "id",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"path": "$['title']"
+								},
+								"sink": {
+									"name": "title",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['price']"
+								},
+								"sink": {
+									"name": "price",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"path": "$['description']"
+								},
+								"sink": {
+									"name": "description",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['category']"
+								},
+								"sink": {
+									"name": "category",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['image']"
+								},
+								"sink": {
+									"name": "image",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['rating']['rate']"
+								}
+							},
+							{
+								"source": {
+									"path": "$['rating']['count']"
+								}
+							}
+						]
+					}
 				},
 				"inputs": [
 					{
@@ -45,7 +114,120 @@
 				"outputs": [
 					{
 						"referenceName": "AzureSqlTable1",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"param_schema": "staging",
+							"param_tablename": "products"
+						}
+					}
+				]
+			},
+			{
+				"name": "copycarts",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "copyproducts",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "RestSource",
+						"httpRequestTimeout": "00:01:40",
+						"requestInterval": "00.00:00:00.010",
+						"requestMethod": "GET",
+						"paginationRules": {
+							"supportRFC5988": "true"
+						}
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"preCopyScript": "truncate staging.orders",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "$['id']"
+								},
+								"sink": {
+									"name": "id",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"path": "$['userId']"
+								},
+								"sink": {
+									"name": "userId",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"path": "$['date']"
+								},
+								"sink": {
+									"name": "date",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"path": "$['products'][0]['productId']"
+								},
+								"sink": {
+									"name": "productId",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"path": "$['products'][0]['quantity']"
+								},
+								"sink": {
+									"name": "quantity",
+									"type": "Int32"
+								}
+							}
+						],
+						"collectionReference": ""
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "RestResource1",
+						"type": "DatasetReference",
+						"parameters": {
+							"method": "carts"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "AzureSqlTable1",
+						"type": "DatasetReference",
+						"parameters": {
+							"param_schema": "staging",
+							"param_tablename": "orders"
+						}
 					}
 				]
 			}
