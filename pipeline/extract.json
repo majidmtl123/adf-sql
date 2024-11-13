@@ -5,6 +5,8 @@
 			{
 				"name": "copyproducts",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -88,16 +90,6 @@
 									"name": "image",
 									"type": "String"
 								}
-							},
-							{
-								"source": {
-									"path": "$['rating']['rate']"
-								}
-							},
-							{
-								"source": {
-									"path": "$['rating']['count']"
-								}
 							}
 						]
 					}
@@ -125,6 +117,8 @@
 			{
 				"name": "copycarts",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "copyproducts",
@@ -153,7 +147,7 @@
 					},
 					"sink": {
 						"type": "AzureSqlSink",
-						"preCopyScript": "truncate staging.orders",
+						"preCopyScript": "truncate table staging.orders",
 						"writeBehavior": "insert",
 						"sqlWriterUseTableLock": false,
 						"disableMetricsCollection": false
@@ -227,6 +221,180 @@
 						"parameters": {
 							"param_schema": "staging",
 							"param_tablename": "orders"
+						}
+					}
+				]
+			},
+			{
+				"name": "copyusers",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "RestSource",
+						"httpRequestTimeout": "00:01:40",
+						"requestInterval": "00.00:00:00.010",
+						"requestMethod": "GET",
+						"paginationRules": {
+							"supportRFC5988": "true"
+						}
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"preCopyScript": "truncate table staging.users",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "$['address']['geolocation']['lat']"
+								},
+								"sink": {
+									"name": "lat",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['address']['geolocation']['long']"
+								},
+								"sink": {
+									"name": "long",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['address']['city']"
+								},
+								"sink": {
+									"name": "city",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['address']['street']"
+								},
+								"sink": {
+									"name": "street",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['address']['number']"
+								},
+								"sink": {
+									"name": "number",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['address']['zipcode']"
+								},
+								"sink": {
+									"name": "zipcode",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['id']"
+								},
+								"sink": {
+									"name": "id",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"path": "$['email']"
+								},
+								"sink": {
+									"name": "email",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['username']"
+								},
+								"sink": {
+									"name": "username",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['password']"
+								},
+								"sink": {
+									"name": "password",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['name']['firstname']"
+								},
+								"sink": {
+									"name": "firstname",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['name']['lastname']"
+								},
+								"sink": {
+									"name": "lastname",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['phone']"
+								},
+								"sink": {
+									"name": "phone",
+									"type": "String"
+								}
+							}
+						],
+						"collectionReference": ""
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "RestResource1",
+						"type": "DatasetReference",
+						"parameters": {
+							"method": "users"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "AzureSqlTable1",
+						"type": "DatasetReference",
+						"parameters": {
+							"param_schema": "staging",
+							"param_tablename": "users"
 						}
 					}
 				]
