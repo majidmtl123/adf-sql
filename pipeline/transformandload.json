@@ -22,7 +22,7 @@
 						"partitionOption": "None"
 					},
 					"dataset": {
-						"referenceName": "AzureSqlTable2",
+						"referenceName": "AzureSql_lookup",
 						"type": "DatasetReference"
 					},
 					"firstRowOnly": false
@@ -31,7 +31,14 @@
 			{
 				"name": "loadorders",
 				"type": "Lookup",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "loadproducts",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -48,7 +55,7 @@
 						"partitionOption": "None"
 					},
 					"dataset": {
-						"referenceName": "AzureSqlTable2",
+						"referenceName": "AzureSql_lookup",
 						"type": "DatasetReference"
 					},
 					"firstRowOnly": false
@@ -57,7 +64,14 @@
 			{
 				"name": "loadusersaddrees",
 				"type": "Lookup",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "loadorders",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -74,7 +88,7 @@
 						"partitionOption": "None"
 					},
 					"dataset": {
-						"referenceName": "AzureSqlTable2",
+						"referenceName": "AzureSql_lookup",
 						"type": "DatasetReference"
 					},
 					"firstRowOnly": false

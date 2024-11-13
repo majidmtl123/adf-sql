@@ -1,0 +1,111 @@
+{
+	"name": "shopingcart_dailyload",
+	"properties": {
+		"activities": [
+			{
+				"name": "extract data",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "getwatermark",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "extract",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "transformload",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "extract data",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "transformandload",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "getwatermark",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "Select LastExtractDate FROM Watermark where source='shoppingcart'",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "AzureSql_lookup",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "updatewatermark",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "transformload",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "UPDATE Watermark\nSET \n    LastExtractDate = '2024-11-06',\n    LastUpdatedAt_UTC = '2024-11-06 15:30:00'\nWHERE \n    Source = 'ShoppingCart';\n select 1",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "AzureSql_lookup",
+						"type": "DatasetReference"
+					}
+				}
+			}
+		],
+		"annotations": []
+	}
+}
