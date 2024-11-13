@@ -1,0 +1,86 @@
+{
+	"name": "transformandload",
+	"properties": {
+		"activities": [
+			{
+				"name": "loadproducts",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "MERGE INTO dbo.Products AS target\nUSING Staging.Products AS source\nON target.id = source.id  -- Match condition based on unique identifier\nWHEN MATCHED THEN\n    UPDATE SET \n        target.title = source.title,\n        target.price = source.price,\n        target.category = source.category,\n        target.description = source.description,\n        target.image = source.image  -- Update existing record\nWHEN NOT MATCHED BY TARGET THEN\n    INSERT (id, title, price, category, description, image)\n    VALUES (source.id, source.title, source.price, source.category, source.description, source.image);  -- Insert new record\n\tselect 1",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "AzureSqlTable2",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "loadorders",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "MERGE INTO dbo.Orders AS target\nUSING (SELECT DISTINCT id, userId, date FROM Staging.Orders) AS source\nON target.id = source.id\nWHEN MATCHED THEN\n    UPDATE SET \n        target.userId = source.userId,\n        target.date = source.date  -- Overwrite existing order details if they match by ID\nWHEN NOT MATCHED BY TARGET THEN\n    INSERT (id, userId, date)\n    VALUES (source.id, source.userId, source.date);  -- Insert new orders if they don't exist\n\nMERGE INTO dbo.OrderProducts AS target\nUSING Staging.Orders AS source\nON target.orderId = source.id AND target.productId = source.productId  -- Match on order ID and product ID\nWHEN MATCHED THEN\n    UPDATE SET \n        target.quantity = source.quantity  -- Overwrite existing product quantity if it matches by orderId and productId\nWHEN NOT MATCHED BY TARGET THEN\n    INSERT (orderId, productId, quantity)\n    VALUES (source.id, source.productId, source.quantity);  -- Insert new product details if they don't exist\n\tselect 1",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "AzureSqlTable2",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "loadusersaddrees",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "MERGE INTO dbo.Users AS target\nUSING (\n    SELECT \n        id, email, username, password, firstname AS first_name, lastname AS last_name, phone\n    FROM \n        Staging.Users\n) AS source\nON target.id = source.id\nWHEN MATCHED THEN\n    UPDATE SET \n        target.email = source.email,\n        target.username = source.username,\n        target.password = source.password,\n        target.first_name = source.first_name,\n        target.last_name = source.last_name,\n        target.phone = source.phone  -- Overwrite existing user data if matched by ID\nWHEN NOT MATCHED BY TARGET THEN\n    INSERT (id, email, username, password, first_name, last_name, phone)\n    VALUES (source.id, source.email, source.username, source.password, source.first_name, source.last_name, source.phone);  -- Insert new user if not exists\n\nMERGE INTO dbo.Addresses AS target\nUSING (\n    SELECT \n        id AS user_id, city, street, \n        CAST(number AS INT) AS number, \n        zipcode, lat AS geolocation_lat, long AS geolocation_long\n    FROM \n        Staging.Users\n) AS source\nON target.user_id = source.user_id\nWHEN MATCHED THEN\n    UPDATE SET \n        target.city = source.city,\n        target.street = source.street,\n        target.number = source.number,\n        target.zipcode = source.zipcode,\n        target.geolocation_lat = source.geolocation_lat,\n        target.geolocation_long = source.geolocation_long  -- Update address details if a match by user_id exists\nWHEN NOT MATCHED BY TARGET THEN\n    INSERT (user_id, city, street, number, zipcode, geolocation_lat, geolocation_long)\n    VALUES (source.user_id, source.city, source.street, source.number, source.zipcode, source.geolocation_lat, source.geolocation_long);  -- Insert address if not exists\n\tselect 1",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "AzureSqlTable2",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			}
+		],
+		"annotations": []
+	}
+}
