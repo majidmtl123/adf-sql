@@ -8,7 +8,7 @@
 		"annotations": [],
 		"type": "RestResource",
 		"typeProperties": {
-			"relativeUrl": "/weather?q=New York&appid=8361b6088f8c0a8ce0cc09a8a953f001"
+			"relativeUrl": "weather?q=New York&appid=8361b6088f8c0a8ce0cc09a8a953f001"
 		},
 		"schema": []
 	}
