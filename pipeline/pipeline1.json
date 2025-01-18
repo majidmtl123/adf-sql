@@ -50,6 +50,16 @@
 				]
 			}
 		],
+		"parameters": {
+			"city": {
+				"type": "string",
+				"defaultValue": "montreal"
+			},
+			"key": {
+				"type": "string",
+				"defaultValue": "b6388b2c58b856dd031506d0a154d7d9"
+			}
+		},
 		"annotations": []
 	}
 }
