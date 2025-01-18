@@ -39,7 +39,17 @@
 				"inputs": [
 					{
 						"referenceName": "RestResource2",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"city": {
+								"value": "@pipeline().parameters.city",
+								"type": "Expression"
+							},
+							"key": {
+								"value": "@pipeline().parameters.key",
+								"type": "Expression"
+							}
+						}
 					}
 				],
 				"outputs": [
