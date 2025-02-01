@@ -13,12 +13,18 @@
 				}
 			],
 			"sinks": [],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "selectfromhousedataset"
+				}
+			],
 			"scriptLines": [
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false,",
-				"     documentForm: 'documentPerLine') ~> housepricesource"
+				"     documentForm: 'documentPerLine') ~> housepricesource",
+				"housepricesource select(skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectfromhousedataset"
 			]
 		}
 	}
