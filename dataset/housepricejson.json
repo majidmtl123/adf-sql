@@ -1,0 +1,20 @@
+{
+	"name": "housepricejson",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "azuredatastorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "house-price.json",
+				"folderPath": "staging",
+				"fileSystem": "houseprice"
+			}
+		},
+		"schema": {}
+	}
+}

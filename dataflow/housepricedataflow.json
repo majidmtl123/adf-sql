@@ -1,0 +1,25 @@
+{
+	"name": "housepricedataflow",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "housepricejson",
+						"type": "DatasetReference"
+					},
+					"name": "housepricesource"
+				}
+			],
+			"sinks": [],
+			"transformations": [],
+			"scriptLines": [
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     documentForm: 'documentPerLine') ~> housepricesource"
+			]
+		}
+	}
+}
