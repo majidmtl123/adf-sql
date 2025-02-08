@@ -1,0 +1,63 @@
+{
+	"name": "Json2",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "azuredatastorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "house-price.json",
+				"folderPath": "staging",
+				"fileSystem": "houseprice"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"price": {
+					"type": "string"
+				},
+				"area": {
+					"type": "string"
+				},
+				"bedrooms": {
+					"type": "string"
+				},
+				"bathrooms": {
+					"type": "string"
+				},
+				"stories": {
+					"type": "string"
+				},
+				"mainroad": {
+					"type": "string"
+				},
+				"guestroom": {
+					"type": "string"
+				},
+				"basement": {
+					"type": "string"
+				},
+				"hotwaterheating": {
+					"type": "string"
+				},
+				"airconditioning": {
+					"type": "string"
+				},
+				"parking": {
+					"type": "string"
+				},
+				"prefarea": {
+					"type": "string"
+				},
+				"furnishingstatus": {
+					"type": "string"
+				}
+			}
+		}
+	}
+}

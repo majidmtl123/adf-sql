@@ -1,0 +1,55 @@
+{
+	"name": "dataflow2",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Json2",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "select1"
+				},
+				{
+					"name": "filter1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          price as string,",
+				"          area as string,",
+				"          bedrooms as string,",
+				"          bathrooms as string,",
+				"          stories as string,",
+				"          mainroad as string,",
+				"          guestroom as string,",
+				"          basement as string,",
+				"          hotwaterheating as string,",
+				"          airconditioning as string,",
+				"          parking as string,",
+				"          prefarea as string,",
+				"          furnishingstatus as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     documentForm: 'documentPerLine') ~> source1",
+				"source1 select(mapColumn(",
+				"          price,",
+				"          area,",
+				"          furnishingstatus",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 filter(ERROR_FUNCTION('')) ~> filter1"
+			]
+		}
+	}
+}
